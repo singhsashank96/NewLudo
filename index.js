@@ -1,5 +1,5 @@
 const express = require("express");
-const connectDB = require("../db.js");
+const connectDB = require("../NewLudo/db.js");
 const path = require("path");
 
 const app = express();
@@ -15,9 +15,9 @@ app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
-app.use("/user", require("../Routes/auth_routes.js"));
-app.use("/message", require("../Routes/message_routes.js"));
-app.use("/conversation", require("../Routes/conversation_routes.js"));
+app.use("/user", require("../NewLudo/Routes/auth_routes.js"));
+app.use("/message", require("../NewLudo/Routes/message_routes.js"));
+app.use("/conversation", require("../NewLudo/Routes/conversation_routes.js"));
 
 // Connect to the database
 connectDB();
