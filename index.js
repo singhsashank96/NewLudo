@@ -6,7 +6,18 @@ const PORT = 5000;
 const path = require("path");
 
 const app = express();
-app.use(cors());
+// app.use(cors());
+
+const corsOptions = {
+  origin: "http://localhost:3000/",  // Replace with your actual front-end domain
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization",
+};
+
+app.use(cors(corsOptions));
+
+
+
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.json({ limit: "50mb" }));
 
