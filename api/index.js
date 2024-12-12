@@ -60,7 +60,7 @@ const server = http.createServer(app);
 // Socket.io setup
 require("../socket.js")(server); // Initialize socket.io logic
 
-app.use("../uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 
 // Start server and connect to database
