@@ -1,5 +1,5 @@
 const express = require("express");
- const connectDB = require("../NewLudo/db.js");
+ const connectDB = require("./db.js");
  const cors = require("cors");
 const http = require("http");
 const PORT = 5000;
@@ -14,15 +14,15 @@ app.use(express.json({ limit: "50mb" }));
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
- app.use("/user", require("../NewLudo/Routes/auth_routes.js"));
- app.use("/message", require("../NewLudo/Routes/message_routes.js"));
- app.use("/conversation", require("../NewLudo/Routes/conversation_routes.js"));
+ app.use("/user", require("././Routes/auth_routes.js"));
+ app.use("/message", require("././Routes/message_routes.js"));
+ app.use("/conversation", require("././Routes/conversation_routes.js"));
 
 const server = http.createServer(app);
 
-require("../NewLudo/socket.js")(server);
+require("././socket.js")(server);
 
-app.use("/uploads", express.static(path.join(__dirname, "../NewLudo/uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "././uploads")));
 
 
 server.listen(PORT, () => {
