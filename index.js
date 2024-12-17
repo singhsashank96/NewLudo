@@ -10,7 +10,7 @@ const app = express();
 // CORS configuration for HTTP requests
 const corsOptions = {
   
-  origin: "https://willowy-khapse-6db985.netlify.app", // your frontend URL
+  origin: "https://playful-gumption-04e757.netlify.app", // your frontend URL
   methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
   credentials: true, // if you need to send cookies or headers with requests
 };
