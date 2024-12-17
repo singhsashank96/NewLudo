@@ -10,7 +10,7 @@ const app = express();
 // CORS configuration for HTTP requests
 const corsOptions = {
   
-  origin: "https://kaleidoscopic-tarsier-6cb09e.netlify.app/", // your frontend URL
+  origin: "https://kaleidoscopic-tarsier-6cb09e.netlify.app", // your frontend URL
   methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
   credentials: true, // if you need to send cookies or headers with requests
 };
