@@ -4,7 +4,7 @@ const MessageSchema = new mongoose.Schema(
   {
     conversationId: {
       type: String,
-      required: true,
+      // required: true,
     },
     sender: {
       type: String,
@@ -28,6 +28,15 @@ const MessageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       default: null,
       ref: "Message",
+    },
+    gameRequestStatus: {  // New field to track the game request status
+      type: String,
+      enum: ["waiting", "accepted", "denied" ,""],  // Enum to restrict values to 'waiting', 'accepted', or 'denied'
+      default: "",  // Default status is 'waiting' when a new game request is created
+    },
+    gameAmount: {  // Optional: New field to track the amount of the game request
+      type: Number,
+      default: 0,  // You can set this to 0 if no amount is associated with the message initially
     },
   },
   {

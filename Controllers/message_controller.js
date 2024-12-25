@@ -1,4 +1,5 @@
 const Message = require("../Models/Message.js");
+const User = require("../Models/User.js")
 const Conversation = require("../Models/Conversation.js");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const imageupload = require("../config/imageupload.js");
@@ -17,7 +18,7 @@ const sendMessage = async (req, res) => {
   }
 
   try {
-    const { conversationId, sender, text } = req.body;
+    const { conversationId, sender, text  , gameRequestStatus} = req.body;
     if (!conversationId || !sender || !text) {
       return res.status(400).json({
         error: "Please fill all the fields",
@@ -45,6 +46,7 @@ const sendMessage = async (req, res) => {
         text,
         imageurl,
         seenby: [sender],
+        gameRequestStatus:gameRequestStatus?gameRequestStatus:""
       });
 
       await newMessage.save();
@@ -59,6 +61,55 @@ const sendMessage = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+const sendMessageForGame = async (req, res) => {
+  var imageurl = "";
+
+
+
+  try {
+    const { conversationId, sender, text , gameRequestStatus } = req.body;
+    if ( !sender || !text) {
+      return res.status(400).json({
+        error: "Please fill all the fields",
+      });
+    }
+
+    // const conversation = await Conversation.findById(conversationId).populate(
+    //   "members",
+    //   "-password"
+    // );
+
+    //check if conversation contains bot
+    var isbot = false;
+
+    // conversation.members.forEach((member) => {
+    //   if (member != sender && member.email.includes("bot")) {
+    //     isbot = true;
+    //   }
+    // });
+
+      const newMessage = new Message({
+        sender,
+        text,
+        imageurl,
+        seenby: [sender],
+        gameRequestStatus
+      });
+
+      await newMessage.save();
+      console.log("newMessage saved");
+
+      // conversation.updatedAt = new Date();
+      // await conversation.save();
+
+      res.json(newMessage);
+    
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 
 const allMessage = async (req, res) => {
   try {
@@ -166,9 +217,65 @@ const generateairesponse = async (data) => {
   }
 };
 
+const updateGameRequestStatus = async (req, res) => {
+  try {
+    const { messageId, gameRequestStatus, sender, coinChange } = req.body;
+
+    if (!messageId || !gameRequestStatus || !sender || coinChange == null) {
+      return res.status(400).json({
+        error: "Please provide all required fields: messageId, gameRequestStatus, sender, and coinChange",
+      });
+    }
+
+    // Update the game request status in the message
+    const message = await Message.findByIdAndUpdate(
+      messageId,
+      { gameRequestStatus },
+      { new: true }
+    );
+
+    if (!message) {
+      return res.status(404).json({
+        error: "Message not found",
+      });
+    }
+
+    // Update the user's coin balance
+    const user = await User.findById(sender);
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+
+    if (user.coin + coinChange < 0) {
+      return res.status(400).json({
+        error: "Insufficient coins",
+      });
+    }
+
+    user.coin += coinChange;
+    await user.save();
+
+    res.json({
+      message: "Game request status updated and user coin balance adjusted successfully",
+      updatedMessage: message,
+      updatedUser: user,
+    });
+  } catch (error) {
+    console.error("Error updating game request status:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
 module.exports = {
   sendMessage,
   allMessage,
   generateairesponse,
   deletemesage,
+  sendMessageForGame ,
+  updateGameRequestStatus
 };

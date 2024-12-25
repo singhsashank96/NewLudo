@@ -68,7 +68,7 @@ module.exports = (server) => {
       const conversation = await Conversation.findById(
         data.data.conversationId
       ).populate("members", "-password");
-      conversation.latestmessage = data.data.text;
+      conversation.latestmessage = data?.data?.text || "test";
       var isbot = false;
 
       const members = conversation.members.map((member) =>
@@ -128,7 +128,7 @@ module.exports = (server) => {
         conversation.unread = conversation.unread.map((unread, index) => {
           if (
             index !== ids.indexOf(data.data.sender) &&
-            io.sockets.adapter.rooms.get(data.data.conversationId).size === 1
+            io.sockets.adapter.rooms.get(data?.data?.conversationId)?.size === 1
           ) {
             return unread + 1;
           }

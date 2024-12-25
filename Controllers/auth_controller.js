@@ -111,41 +111,96 @@ cloudinary.config({
 
 const register = async (req, res) => {
   try {
-    console.log("register request received");
+    console.log("Register request received");
 
-    const { name, email, password, phoneNum ,role } = req.body;
+    const { name, email, password, phoneNum , role } = req.body;
 
-    // Check if all required fields are provided
-    if (!name || !email || !password || !phoneNum | !role) {
+    // Check if the fields are provided
+    if (!name || !email || !password || !phoneNum) {
       return res.status(400).json({
         error: "Please fill all the fields",
       });
     }
 
+    console.log("Checking if user already exists...");
+
     // Check if the user already exists
-    const user = await User.findOne({ email });
-    if (user) {
+    const existingUser = await User.findOne({ email });
+    const existingNumber = await User.findOne({ phoneNum });
+
+    if (existingUser && existingNumber) {
       return res.status(400).json({
         error: "User already exists",
       });
     }
 
+    console.log("Handling profile picture...");
+
+    // Handle profile picture
+    let imageUrl = "";
+    if (req.file != null) {
+      try {
+        // If the user provides a file, upload it
+        imageUrl = await imageupload(req.file);
+        console.log("Image uploaded successfully:", imageUrl);
+      } catch (err) {
+        console.error("Error uploading image:", err.message);
+        return res.status(500).json({ error: "Error uploading image" });
+      }
+    } else {
+      // If no file, use a default avatar URL
+      imageUrl = `https://ui-avatars.com/api/?name=${name}&background=random&bold=true`;
+    }
+
+    console.log("Hashing the password...");
     // Hash the password
     const salt = await bcrypt.genSalt(10);
     const secPass = await bcrypt.hash(password, salt);
 
-    // Create a new user
+    console.log("Creating new user...");
+
+    // Create the new user
     const newUser = new User({
       name,
       email,
       password: secPass,
       phoneNum,
-      role
+      role,
+      profilePic: imageUrl,
     });
 
     await newUser.save();
 
-    // Generate JWT token
+    // Check if this user is a bot registration (email contains "bot")
+    const isBot = email.includes("bot");
+
+    if (isBot) {
+      console.log("Creating bot user...");
+
+      // Create bot user after the normal user
+      const botUser = new User({
+        name: "AI Chatbot", // Set bot name
+        email: email + "bot", // Append 'bot' to email for bot users
+        password: secPass, // Bot uses the same password as the user
+        phoneNum: "0000000000", // Set bot phone number to a default
+        profilePic: "https://play-lh.googleusercontent.com/Oe0NgYQ63TGGEr7ViA2fGA-yAB7w2zhMofDBR3opTGVvsCFibD8pecWUjHBF_VnVKNdJ", // Default bot profile picture
+      });
+
+      await botUser.save();
+
+      console.log("Creating conversation between user and bot...");
+
+      // Create a conversation between the new user and the bot
+      const newConversation = new Conversation({
+        members: [newUser._id, botUser._id], // Conversation between user and bot
+      });
+
+      await newConversation.save();
+    }
+
+    console.log("Generating JWT token...");
+
+    // Generate JWT token for the new user (or bot)
     const data = {
       user: {
         id: newUser.id,
@@ -157,11 +212,13 @@ const register = async (req, res) => {
     res.json({
       authtoken,
     });
+
   } catch (error) {
-    console.error(error.message);
+    console.error("Error during registration:", error.message);
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 
 
@@ -170,16 +227,16 @@ const login = async (req, res) => {
   console.log("login request received");
 
   try {
-    const { email, password, otp } = req.body;
+    const { phoneNum, password, otp } = req.body;
 
-    if (!email || (!password && !otp)) {
+    if (!phoneNum || (!password && !otp)) {
       return res.status(400).json({
         error: "Please fill all the fields",
       });
     }
 
     const user = await User.findOne({
-      email: email,
+      phoneNum: phoneNum,
     });
 
     if (!user) {
@@ -255,16 +312,18 @@ const allUser = async (req, res) => {
   try {
     const users = await User.find().select("-password");
     //filter users such bot for other users are not included
-    users.forEach((user) => {
-      if (user.email.includes("bot") && user.email != requser.email) {
-        users.splice(users.indexOf(user), 1);
-      }
-    });
+    // users.forEach((user) => {
+    //   if ( user.email != requser.email) {
+    //     users.splice(users.indexOf(user), 1);
+    //   }
+    // });
     res.json(users);
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
 };
+
+
 
 const getUserById = async (req, res) => {
   try {

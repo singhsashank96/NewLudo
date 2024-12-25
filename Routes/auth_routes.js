@@ -24,7 +24,7 @@ router.get("/userCoins", getCoins);
 router.post("/addCoins", addCoins);
 router.put("/userCoins", updateCoins)
 
-router.get("/", fetchuser, allUser);
+router.get("/" , allUser);
 router.get("/user/:id", getUserById);
 
 router.put("/update", fetchuser, updateprofile);

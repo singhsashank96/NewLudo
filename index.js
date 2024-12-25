@@ -2,64 +2,38 @@ const express = require("express");
 const connectDB = require("./db.js");
 const cors = require("cors");
 const http = require("http");
-const socketIo = require("socket.io"); // Import socket.io
+const PORT = 5000;
 const path = require("path");
 
 const app = express();
 
-// CORS configuration for HTTP requests
-const corsOptions = {
-  
-  origin: "https://playful-gumption-04e757.netlify.app", // your frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
-  credentials: true, // if you need to send cookies or headers with requests
-};
-
-app.use(cors(corsOptions)); // Apply CORS middleware to Express
-
+// Body parsing middleware
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.json({ limit: "50mb" }));
+
+// Use CORS middleware with default options (allowing all origins, methods, and headers)
+app.use(cors());
 
 // Routes
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
+
 app.use("/user", require("././Routes/auth_routes.js"));
 app.use("/message", require("././Routes/message_routes.js"));
 app.use("/conversation", require("././Routes/conversation_routes.js"));
 
+// Static files
+app.use("/uploads", express.static(path.join(__dirname, "./uploads")));
+
+// Server setup
 const server = http.createServer(app);
 
-// Socket.io configuration with CORS for WebSocket connections
-const io = socketIo(server, {
-  cors: {
-    origin: "https://celebrated-druid-627e29.netlify.app", // your frontend URL
-    methods: ["GET", "POST"], // Allowed WebSocket methods
-    credentials: true, // Allow cookies or credentials
-  },
-});
+// Socket.io setup
+require("./socket.js")(server); // Initialize socket.io logic
 
-// Socket.io connection handling
-io.on("connection", (socket) => {
-  console.log("New WebSocket connection established");
-
-  // Define your socket events here, for example:
-  socket.on("message", (data) => {
-    console.log(data);
-    io.emit("message", data); // Broadcasting message to all clients
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-  });
-});
-
-require("././socket.js")(server); // Assuming this is where you're using your socket logic
-
-app.use("/uploads", express.static(path.join(__dirname, "././uploads")));
-
-// Start server and connect DB
-server.listen(5000, () => {
-  console.log(`🚀 Server started at http://localhost:5000`);
+// Start server and connect to the database
+server.listen(PORT, () => {
+  console.log(`🚀 Server started on http://localhost:${PORT}`);
   connectDB();
 });
