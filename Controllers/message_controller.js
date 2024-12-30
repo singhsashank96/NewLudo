@@ -33,11 +33,11 @@ const sendMessage = async (req, res) => {
     //check if conversation contains bot
     var isbot = false;
 
-    conversation.members.forEach((member) => {
-      if (member != sender && member.email.includes("bot")) {
-        isbot = true;
-      }
-    });
+    // conversation.members.forEach((member) => {
+    //   if (member != sender && member.email.includes("bot")) {
+    //     isbot = true;
+    //   }
+    // });
 
     if (!isbot) {
       const newMessage = new Message({
