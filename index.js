@@ -11,7 +11,6 @@ const app = express();
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.json({ limit: "50mb" }));
 
-// Use CORS middleware with default options (allowing all origins, methods, and headers)
 app.use(cors());
 
 // Routes

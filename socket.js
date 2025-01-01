@@ -68,8 +68,10 @@ module.exports = (server) => {
       const conversation = await Conversation.findById(
         data.data.conversationId
       ).populate("members", "-password");
-      conversation.latestmessage = data?.data?.text || "test";
+      conversation.latestmessage = data?.data?.text || "3333";
       var isbot = false;
+
+      console.log("conversation" ,conversation);
 
       const members = conversation.members.map((member) =>
         member.id.toString()
@@ -78,6 +80,7 @@ module.exports = (server) => {
       members.forEach((member) => {
         if (member != data.data.sender) {
           const memberroom = io.sockets.adapter.rooms.get(member);
+          console.log("memberroom" ,memberroom);
           if (memberroom) {
             const sid = Array.from(memberroom)[0];
             const chatroom = io.sockets.adapter.rooms.get(
@@ -135,8 +138,8 @@ module.exports = (server) => {
           return unread;
         });
 
-        // console.log("sender", data.data.sender);
-        // console.log("conversation", conversation);
+        console.log("sender", data.data.sender);
+        console.log("conversation", conversation);
 
         //new message to all members except sender
         conversation.members.forEach((member) => {
@@ -166,3 +169,4 @@ module.exports = (server) => {
     });
   });
 };
+
