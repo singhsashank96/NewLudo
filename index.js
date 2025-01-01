@@ -1,5 +1,5 @@
 const express = require("express");
-const connectDB = require("../backend/db.js");
+const connectDB = require("./db.js");
 const cors = require("cors");
 const http = require("http");
 const PORT = 7000;
@@ -19,9 +19,9 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.use("/user", require("../backend/Routes/auth_routes.js"));
-app.use("/message", require("../backend/Routes/message_routes.js"));
-app.use("/conversation", require("../backend/Routes/conversation_routes.js"));
+app.use("/user", require("./Routes/auth_routes.js"));
+app.use("/message", require("./Routes/message_routes.js"));
+app.use("/conversation", require("./Routes/conversation_routes.js"));
 
 // Static files
 app.use("/uploads", express.static(path.join(__dirname, "../backend/uploads")));
