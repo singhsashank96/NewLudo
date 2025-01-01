@@ -24,13 +24,13 @@ app.use("/message", require("./Routes/message_routes.js"));
 app.use("/conversation", require("./Routes/conversation_routes.js"));
 
 // Static files
-app.use("/uploads", express.static(path.join(__dirname, "../backend/uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "./uploads")));
 
 // Server setup
 const server = http.createServer(app);
 
 // Socket.io setup
-require("../backend/socket.js")(server); // Initialize socket.io logic
+require("./socket.js")(server); // Initialize socket.io logic
 
 // Start server and connect to the database
 server.listen(PORT, () => {
