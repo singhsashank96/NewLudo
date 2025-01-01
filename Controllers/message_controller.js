@@ -71,7 +71,7 @@ const sendMessage = async (req, res) => {
   }
 
   try {
-    const { conversationId, sender, text  , gameRequestStatus} = req.body;
+    const { conversationId, sender, text, gameRequestStatus } = req.body;
     if (!conversationId || !sender || !text) {
       return res.status(400).json({
         error: "Please fill all the fields",
@@ -83,14 +83,14 @@ const sendMessage = async (req, res) => {
       "-password"
     );
 
-    //check if conversation contains bot
+    // Check if conversation contains bot
     var isbot = false;
 
-    // conversation.members.forEach((member) => {
-    //   if (member != sender && member.email.includes("bot")) {
-    //     isbot = true;
-    //   }
-    // });
+    conversation.members.forEach((member) => {
+      if (member != sender && member.email && member.email.includes("bot")) {
+        isbot = true;
+      }
+    });
 
     if (!isbot) {
       const newMessage = new Message({
@@ -99,7 +99,7 @@ const sendMessage = async (req, res) => {
         text,
         imageurl,
         seenby: [sender],
-        gameRequestStatus:gameRequestStatus?gameRequestStatus:""
+        gameRequestStatus: gameRequestStatus ? gameRequestStatus : "",
       });
 
       await newMessage.save();
@@ -114,6 +114,7 @@ const sendMessage = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 const sendMessageForGame = async (req, res) => {
   var imageurl = "";
@@ -162,7 +163,6 @@ const sendMessageForGame = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 const allMessage = async (req, res) => {
   try {
