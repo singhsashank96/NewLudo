@@ -15,7 +15,7 @@ const {
 const fetchuser = require("../middleware/fetchUser.js");
 
 router.get("/:id/:userid", fetchuser, allMessage);
-router.post("/send", fetchuser, upload.single("file"), sendMessage);
+router.post("/send", upload.single("file"), sendMessage);
 // router.post("/send", fetchuser, upload.single("file"), sendMessageForGame);
 router.post("/delete", fetchuser, deletemesage);
 router.post("/updateGameRequestStatus", fetchuser, updateGameRequestStatus);

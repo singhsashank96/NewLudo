@@ -1,8 +1,8 @@
 const express = require("express");
-const connectDB = require("./db.js");
+const connectDB = require("../backend/db.js");
 const cors = require("cors");
 const http = require("http");
-const PORT = 5000;
+const PORT = 7000;
 const path = require("path");
 
 const app = express();
@@ -19,18 +19,18 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.use("/user", require("././Routes/auth_routes.js"));
-app.use("/message", require("././Routes/message_routes.js"));
-app.use("/conversation", require("././Routes/conversation_routes.js"));
+app.use("/user", require("../backend/Routes/auth_routes.js"));
+app.use("/message", require("../backend/Routes/message_routes.js"));
+app.use("/conversation", require("../backend/Routes/conversation_routes.js"));
 
 // Static files
-app.use("/uploads", express.static(path.join(__dirname, "./uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "../backend/uploads")));
 
 // Server setup
 const server = http.createServer(app);
 
 // Socket.io setup
-require("./socket.js")(server); // Initialize socket.io logic
+require("../backend/socket.js")(server); // Initialize socket.io logic
 
 // Start server and connect to the database
 server.listen(PORT, () => {

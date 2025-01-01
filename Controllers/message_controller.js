@@ -10,59 +10,6 @@ dotenv.config({ path: "./.env" });
 const modelId = "gemini-pro";
 const model = configuration.getGenerativeModel({ model: modelId });
 
-// const sendMessage = async (req, res) => {
-//   var imageurl = "";
-
-//   if (req.file) {
-//     imageurl = await imageupload(req.file, false);
-//   }
-
-//   try {
-//     const { conversationId, sender, text  , gameRequestStatus} = req.body;
-//     if (!conversationId || !sender || !text) {
-//       return res.status(400).json({
-//         error: "Please fill all the fields",
-//       });
-//     }
-
-//     const conversation = await Conversation.findById(conversationId).populate(
-//       "members",
-//       "-password"
-//     );
-
-//     //check if conversation contains bot
-//     var isbot = false;
-
-//     // conversation.members.forEach((member) => {
-//     //   if (member != sender && member.email.includes("bot")) {
-//     //     isbot = true;
-//     //   }
-//     // });
-
-//     if (!isbot) {
-//       const newMessage = new Message({
-//         conversationId,
-//         sender,
-//         text,
-//         imageurl,
-//         seenby: [sender],
-//         gameRequestStatus:gameRequestStatus?gameRequestStatus:""
-//       });
-
-//       await newMessage.save();
-//       console.log("newMessage saved");
-
-//       conversation.updatedAt = new Date();
-//       await conversation.save();
-
-//       res.json(newMessage);
-//     }
-//   } catch (error) {
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
-
-
 const sendMessage = async (req, res) => {
   var imageurl = "";
 
@@ -163,6 +110,7 @@ const sendMessageForGame = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 const allMessage = async (req, res) => {
   try {
