@@ -2,7 +2,7 @@ const express = require("express");
 const connectDB = require("./db.js");
 const cors = require("cors");
 const http = require("http");
-const PORT = 7000;
+const PORT = 5000;
 const path = require("path");
 
 const app = express();
